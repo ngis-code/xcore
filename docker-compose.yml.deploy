@@ -7,7 +7,7 @@ x-logging: &x-logging
 services:
   traefik:
     image: traefik:2.11
-    container_name: xcore-traefik
+    container_name: appwrite-traefik
     <<: *x-logging
     command:
       - --providers.file.directory=/storage/config
@@ -32,13 +32,8 @@ services:
       - appwrite
 
   appwrite:
-    build:
-      context: .
-      args:
-        DEBUG: false
-        TESTING: true
-        VERSION: dev
-    container_name: xcore
+    image: appwrite/appwrite:1.7.4
+    container_name: appwrite
     <<: *x-logging
     restart: unless-stopped
     networks:
@@ -173,32 +168,32 @@ services:
       - _APP_MIGRATIONS_FIREBASE_CLIENT_SECRET
       - _APP_ASSISTANT_OPENAI_API_KEY
 
-#  appwrite-console:
-#    <<: *x-logging
-#    container_name: appwrite-console
-#    image: appwrite/console:6.0.13
-#    restart: unless-stopped
-#    networks:
-#      - appwrite
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.constraint-label-stack=appwrite"
-#      - "traefik.docker.network=appwrite"
-#      - "traefik.http.services.appwrite_console.loadbalancer.server.port=80"
-#      #ws
-#      - traefik.http.routers.appwrite_console_http.entrypoints=appwrite_web
-#      - traefik.http.routers.appwrite_console_http.rule=PathPrefix(`/console`)
-#      - traefik.http.routers.appwrite_console_http.service=appwrite_console
-#      # wss
-#      - traefik.http.routers.appwrite_console_https.entrypoints=appwrite_websecure
-#      - traefik.http.routers.appwrite_console_https.rule=PathPrefix(`/console`)
-#      - traefik.http.routers.appwrite_console_https.service=appwrite_console
-#      - traefik.http.routers.appwrite_console_https.tls=true
+  appwrite-console:
+    <<: *x-logging
+    container_name: appwrite-console
+    image: appwrite/console:6.0.13
+    restart: unless-stopped
+    networks:
+      - appwrite
+    labels:
+      - "traefik.enable=true"
+      - "traefik.constraint-label-stack=appwrite"
+      - "traefik.docker.network=appwrite"
+      - "traefik.http.services.appwrite_console.loadbalancer.server.port=80"
+      #ws
+      - traefik.http.routers.appwrite_console_http.entrypoints=appwrite_web
+      - traefik.http.routers.appwrite_console_http.rule=PathPrefix(`/console`)
+      - traefik.http.routers.appwrite_console_http.service=appwrite_console
+      # wss
+      - traefik.http.routers.appwrite_console_https.entrypoints=appwrite_websecure
+      - traefik.http.routers.appwrite_console_https.rule=PathPrefix(`/console`)
+      - traefik.http.routers.appwrite_console_https.service=appwrite_console
+      - traefik.http.routers.appwrite_console_https.tls=true
 
   appwrite-realtime:
     image: appwrite/appwrite:1.7.4
     entrypoint: realtime
-    container_name: xcore-realtime
+    container_name: appwrite-realtime
     <<: *x-logging
     restart: unless-stopped
     labels:
@@ -242,7 +237,7 @@ services:
     image: appwrite/appwrite:1.7.4
     entrypoint: worker-audits
     <<: *x-logging
-    container_name: xcore-worker-audits
+    container_name: appwrite-worker-audits
     restart: unless-stopped
     networks:
       - appwrite
@@ -268,7 +263,7 @@ services:
     image: appwrite/appwrite:1.7.4
     entrypoint: worker-webhooks
     <<: *x-logging
-    container_name: xcore-worker-webhooks
+    container_name: appwrite-worker-webhooks
     restart: unless-stopped
     networks:
       - appwrite
@@ -296,7 +291,7 @@ services:
     image: appwrite/appwrite:1.7.4
     entrypoint: worker-deletes
     <<: *x-logging
-    container_name: xcore-worker-deletes
+    container_name: appwrite-worker-deletes
     restart: unless-stopped
     networks:
       - appwrite
@@ -359,7 +354,7 @@ services:
     image: appwrite/appwrite:1.7.4
     entrypoint: worker-databases
     <<: *x-logging
-    container_name: xcore-worker-databases
+    container_name: appwrite-worker-databases
     restart: unless-stopped
     networks:
       - appwrite
@@ -385,7 +380,7 @@ services:
     image: appwrite/appwrite:1.7.4
     entrypoint: worker-builds
     <<: *x-logging
-    container_name: xcore-worker-builds
+    container_name: appwrite-worker-builds
     restart: unless-stopped
     networks:
       - appwrite
@@ -453,7 +448,7 @@ services:
     image: appwrite/appwrite:1.7.4
     entrypoint: worker-certificates
     <<: *x-logging
-    container_name: xcore-worker-certificates
+    container_name: appwrite-worker-certificates
     restart: unless-stopped
     networks:
       - appwrite
@@ -488,7 +483,7 @@ services:
     image: appwrite/appwrite:1.7.4
     entrypoint: worker-functions
     <<: *x-logging
-    container_name: xcore-worker-functions
+    container_name: appwrite-worker-functions
     restart: unless-stopped
     networks:
       - appwrite
@@ -527,7 +522,7 @@ services:
     image: appwrite/appwrite:1.7.4
     entrypoint: worker-mails
     <<: *x-logging
-    container_name: xcore-worker-mails
+    container_name: appwrite-worker-mails
     restart: unless-stopped
     networks:
       - appwrite
@@ -561,7 +556,7 @@ services:
     image: appwrite/appwrite:1.7.4
     entrypoint: worker-messaging
     <<: *x-logging
-    container_name: xcore-worker-messaging
+    container_name: appwrite-worker-messaging
     restart: unless-stopped
     networks:
       - appwrite
@@ -612,7 +607,7 @@ services:
     image: appwrite/appwrite:1.7.4
     entrypoint: worker-migrations
     <<: *x-logging
-    container_name: xcore-worker-migrations
+    container_name: appwrite-worker-migrations
     restart: unless-stopped
     networks:
       - appwrite
@@ -646,7 +641,7 @@ services:
     image: appwrite/appwrite:1.7.4
     entrypoint: maintenance
     <<: *x-logging
-    container_name: xcore-task-maintenance
+    container_name: appwrite-task-maintenance
     restart: unless-stopped
     networks:
       - appwrite
@@ -681,7 +676,7 @@ services:
 
   appwrite-task-stats-resources:
     image: appwrite/appwrite:1.7.4
-    container_name: xcore-task-stats-resources
+    container_name: appwrite-task-stats-resources
     entrypoint: stats-resources
     <<: *x-logging
     restart: unless-stopped
@@ -711,7 +706,7 @@ services:
   appwrite-worker-stats-resources:
     image: appwrite/appwrite:1.7.4
     entrypoint: worker-stats-resources
-    container_name: xcore-worker-stats-resources
+    container_name: appwrite-worker-stats-resources
     <<: *x-logging
     restart: unless-stopped
     networks:
@@ -739,7 +734,7 @@ services:
   appwrite-worker-stats-usage:
     image: appwrite/appwrite:1.7.4
     entrypoint: worker-stats-usage
-    container_name: xcore-worker-stats-usage
+    container_name: appwrite-worker-stats-usage
     <<: *x-logging
     restart: unless-stopped
     networks:
@@ -767,7 +762,7 @@ services:
   appwrite-task-scheduler-functions:
     image: appwrite/appwrite:1.7.4
     entrypoint: schedule-functions
-    container_name: xcore-task-scheduler-functions
+    container_name: appwrite-task-scheduler-functions
     <<: *x-logging
     restart: unless-stopped
     networks:
@@ -792,7 +787,7 @@ services:
   appwrite-task-scheduler-executions:
     image: appwrite/appwrite:1.7.4
     entrypoint: schedule-executions
-    container_name: xcore-task-scheduler-executions
+    container_name: appwrite-task-scheduler-executions
     <<: *x-logging
     restart: unless-stopped
     networks:
@@ -817,7 +812,7 @@ services:
   appwrite-task-scheduler-messages:
     image: appwrite/appwrite:1.7.4
     entrypoint: schedule-messages
-    container_name: xcore-task-scheduler-messages
+    container_name: appwrite-task-scheduler-messages
     <<: *x-logging
     restart: unless-stopped
     networks:
@@ -841,7 +836,7 @@ services:
 
   appwrite-assistant:
     image: appwrite/assistant:0.4.0
-    container_name: xcore-assistant
+    container_name: appwrite-assistant
     <<: *x-logging
     restart: unless-stopped
     networks:
@@ -851,14 +846,14 @@ services:
       
   appwrite-browser:
     image: appwrite/browser:0.2.4
-    container_name: xcore-browser
+    container_name: appwrite-browser
     <<: *x-logging
     restart: unless-stopped
     networks:
       - appwrite
 
   openruntimes-executor:
-    container_name: xcore-openruntimes-executor
+    container_name: openruntimes-executor
     hostname: exc1
     <<: *x-logging
     restart: unless-stopped
@@ -911,7 +906,7 @@ services:
 
   mariadb:
     image: mariadb:10.11 # fix issues when upgrading using: mysql_upgrade -u root -p
-    container_name: xcore-mariadb
+    container_name: appwrite-mariadb
     <<: *x-logging
     restart: unless-stopped
     networks:
@@ -928,7 +923,7 @@ services:
 
   redis:
     image: redis:7.2.4-alpine
-    container_name: xcore-redis
+    container_name: appwrite-redis
     <<: *x-logging
     restart: unless-stopped
     command: >
