@@ -15,7 +15,8 @@
         "lint": "vendor/bin/pint --test",
         "format": "vendor/bin/pint",
         "bench": "vendor/bin/phpbench run --report=benchmark",
-        "check": "./vendor/bin/phpstan analyse -c phpstan.neon"
+        "check": "./vendor/bin/phpstan analyse -c phpstan.neon",
+        "start": "php -S localhost:8000 -t src"
     },
     "autoload": {
         "psr-4": {
