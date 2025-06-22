@@ -43,20 +43,6 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    labels:
-      - traefik.enable=true
-      - traefik.constraint-label-stack=appwrite
-      - traefik.docker.network=appwrite
-      - traefik.http.services.appwrite_api.loadbalancer.server.port=80
-      #http
-      - traefik.http.routers.appwrite_api_http.entrypoints=appwrite_web
-      - traefik.http.routers.appwrite_api_http.rule=PathPrefix(`/`)
-      - traefik.http.routers.appwrite_api_http.service=appwrite_api
-      # https
-      - traefik.http.routers.appwrite_api_https.entrypoints=appwrite_websecure
-      - traefik.http.routers.appwrite_api_https.rule=PathPrefix(`/`)
-      - traefik.http.routers.appwrite_api_https.service=appwrite_api
-      - traefik.http.routers.appwrite_api_https.tls=true
     volumes:
       - appwrite-uploads:/storage/uploads:rw
       - appwrite-imports:/storage/imports:rw
@@ -178,6 +164,32 @@ services:
       - _APP_AUTH_CUSTOM_PROVIDER_AUTH_URL
       - _APP_AUTH_CUSTOM_PROVIDER_TOKEN_URL
       - _APP_AUTH_CUSTOM_PROVIDER_USER_URL
+
+  nginx-proxy:
+    image: nginx:1.25-alpine
+    container_name: xcore-nginx-proxy
+    <<: *x-logging
+    restart: unless-stopped
+    networks:
+      - appwrite
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - appwrite
+    labels:
+      - "traefik.enable=true"
+      - "traefik.constraint-label-stack=appwrite"
+      - "traefik.docker.network=appwrite"
+      - "traefik.http.services.appwrite_api.loadbalancer.server.port=80"
+      #http
+      - "traefik.http.routers.appwrite_api_http.entrypoints=appwrite_web"
+      - "traefik.http.routers.appwrite_api_http.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.appwrite_api_http.service=appwrite_api"
+      # https
+      - "traefik.http.routers.appwrite_api_https.entrypoints=appwrite_websecure"
+      - "traefik.http.routers.appwrite_api_https.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.appwrite_api_https.service=appwrite_api"
+      - "traefik.http.routers.appwrite_api_https.tls=true"
 
 #  appwrite-console:
 #    <<: *x-logging
