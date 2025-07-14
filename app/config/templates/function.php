@@ -51,7 +51,7 @@ return [
             ...getRuntimes($templateRuntimes['BUN'], 'bun install', 'src/main.ts', 'bun/starter'),
             ...getRuntimes($templateRuntimes['RUBY'], 'bundle install', 'lib/main.rb', 'ruby/starter'),
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/starter">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/starter">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -78,7 +78,7 @@ return [
                 'node/query-upstash-vector'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-upstash-vector">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/query-upstash-vector">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -123,7 +123,7 @@ return [
                 'node/query-redis-labs'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-redis-labs">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/query-redis-labs">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -167,7 +167,7 @@ return [
                 'node/query-neo4j-auradb'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-neo4j-auradb">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/query-neo4j-auradb">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -220,7 +220,7 @@ return [
                 'node/query-mongo-atlas'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-mongo-atlas">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/query-mongo-atlas">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -258,7 +258,7 @@ return [
                 'node/query-neon-postgres'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/query-neon-postgres">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/query-neon-postgres">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -344,7 +344,7 @@ return [
                 'dart/prompt_chatgpt'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/prompt-chatgpt">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/prompt-chatgpt">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -400,7 +400,7 @@ return [
                 'go/discord-command-bot'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/discord-command-bot">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/discord-command-bot">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -452,7 +452,7 @@ return [
                 'node/analyze-with-perspectiveapi'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/analyze-with-perspectiveapi">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/analyze-with-perspectiveapi">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -501,7 +501,7 @@ return [
                 'dart/censor_with_redact'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/censor-with-redact">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/censor-with-redact">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -532,7 +532,7 @@ return [
         'runtimes' => [
             ...getRuntimes($templateRuntimes['NODE'], 'npm install', 'src/main.js', 'node/generate-pdf')
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/generate-pdf">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/generate-pdf">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -560,7 +560,7 @@ return [
                 'node/github-issue-bot'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/github-issue-bot">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/github-issue-bot">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -604,7 +604,7 @@ return [
                 'node/url-shortener'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/url-shortener">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/url-shortener">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -668,7 +668,7 @@ return [
                 'php/sync-with-algolia'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/sync-with-algolia">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/sync-with-algolia">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -762,7 +762,7 @@ return [
                 'ruby/sync-with-meilisearch'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/sync-with-meilisearch">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/sync-with-meilisearch">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -862,7 +862,7 @@ return [
                 'ruby/whatsapp-with-vonage'
             ),
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/whatsapp-with-vonage">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/whatsapp-with-vonage">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -919,7 +919,7 @@ return [
                 'node/push-notification-with-fcm'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/push-notification-with-fcm">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/push-notification-with-fcm">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -935,14 +935,14 @@ return [
             ],
             [
                 'name' => 'FCM_CLIENT_EMAIL',
-                'description' => 'Your FCM service account email. <a class="u-bold" target="_blank" href="https://github.com/appwrite/templates/tree/main/node/push-notification-with-fcm#:~:text=Documentation-,FCM%3A%20SDK%20Setup,-FCM_PRIVATE_KEY">Learn more</a>.',
+                'description' => 'Your FCM service account email. <a class="u-bold" target="_blank" href="https://github.com/appwrite/corex/tree/main/node/push-notification-with-fcm#:~:text=Documentation-,FCM%3A%20SDK%20Setup,-FCM_PRIVATE_KEY">Learn more</a>.',
                 'placeholder' => 'fcm-adminsdk-2f0de@test-f7q57.iam.gserviceaccount.com',
                 'required' => true,
                 'type' => 'email'
             ],
             [
                 'name' => 'FCM_PRIVATE_KEY',
-                'description' => 'A unique private key used to authenticate with FCM. <a class="u-bold" target="_blank" href="https://github.com/appwrite/templates/tree/main/node/push-notification-with-fcm#:~:text=Documentation-,FCM%3A%20SDK%20Setup,-FCM_DATABASE_URL">Learn more</a>.',
+                'description' => 'A unique private key used to authenticate with FCM. <a class="u-bold" target="_blank" href="https://github.com/appwrite/corex/tree/main/node/push-notification-with-fcm#:~:text=Documentation-,FCM%3A%20SDK%20Setup,-FCM_DATABASE_URL">Learn more</a>.',
                 'placeholder' => '0b683...75675',
                 'required' => true,
                 'type' => 'password'
@@ -988,7 +988,7 @@ return [
                 'php/email-contact-form'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/email-contact-form">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/email-contact-form">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1060,7 +1060,7 @@ return [
                 'node/subscriptions-with-stripe'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/subscriptions-with-stripe">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/subscriptions-with-stripe">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1102,7 +1102,7 @@ return [
                 'node/payments-with-stripe'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/payments-with-stripe">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/payments-with-stripe">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1160,7 +1160,7 @@ return [
                 'node/text-generation-with-huggingface'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/text-generation-with-huggingface">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/text-generation-with-huggingface">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1195,7 +1195,7 @@ return [
                 'node/language-translation-with-huggingface'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/language-translation-with-huggingface">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/language-translation-with-huggingface">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1230,7 +1230,7 @@ return [
                 'node/image-classification-with-huggingface'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/image-classification-with-huggingface">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/image-classification-with-huggingface">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1289,7 +1289,7 @@ return [
                 'node/object-detection-with-huggingface'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/object-detection-with-huggingface">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/object-detection-with-huggingface">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1348,7 +1348,7 @@ return [
                 'node/speech-recognition-with-huggingface'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/speech-recognition-with-huggingface">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/speech-recognition-with-huggingface">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1407,7 +1407,7 @@ return [
                 'node/text-to-speech-with-huggingface'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/text-to-speech-with-huggingface">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/text-to-speech-with-huggingface">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1466,7 +1466,7 @@ return [
                 'node/generate-with-replicate'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/generate-with-replicate">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/generate-with-replicate">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1502,7 +1502,7 @@ return [
                 'node/generate-with-together-ai'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/generate-with-together-ai">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/generate-with-together-ai">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1545,7 +1545,7 @@ return [
                 'node/chat-with-perplexity-ai'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/chat-with-perplexity-ai">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/chat-with-perplexity-ai">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1587,7 +1587,7 @@ return [
                 'node/generate-with-replicate'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/generate-with-replicate">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/generate-with-replicate">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1623,7 +1623,7 @@ return [
                 'node/sync-with-pinecone'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/sync-with-pinecone">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/sync-with-pinecone">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1687,7 +1687,7 @@ return [
                 'node/rag-with-langchain'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/rag-with-langchain">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/rag-with-langchain">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1751,7 +1751,7 @@ return [
                 'node/speak-with-elevenlabs'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/speak-with-elevenlabs">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/speak-with-elevenlabs">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1807,7 +1807,7 @@ return [
                 'node/speak-with-lmnt'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/speak-with-lmnt">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/speak-with-lmnt">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1849,7 +1849,7 @@ return [
                 'node/chat-with-anyscale'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/chat-with-anyscale">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/chat-with-anyscale">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1891,7 +1891,7 @@ return [
                 'node/music-generation-with-huggingface'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/music-generation-with-huggingface">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/music-generation-with-huggingface">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1934,7 +1934,7 @@ return [
                 'node/generate-with-fal-ai'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/generate-with-fal-ai">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/generate-with-fal-ai">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -1970,7 +1970,7 @@ return [
                 'node/subscriptions-with-lemon-squeezy'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/subscriptions-with-lemon-squeezy">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/subscriptions-with-lemon-squeezy">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
@@ -2026,7 +2026,7 @@ return [
                 'node/payments-with-lemon-squeezy'
             )
         ],
-        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/templates/tree/main/node/payments-with-lemon-squeezy">file</a>.',
+        'instructions' => 'For documentation and instructions check out <a target="_blank" rel="noopener noreferrer" class="link" href="https://github.com/appwrite/corex/tree/main/node/payments-with-lemon-squeezy">file</a>.',
         'vcsProvider' => 'github',
         'providerRepositoryId' => 'templates',
         'providerOwner' => 'appwrite',
