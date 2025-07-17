@@ -1,0 +1,29 @@
+version: "3.8"
+
+x-logging: &x-logging
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  mariadb:
+    image: mariadb:10.11 # fix issues when upgrading using: mysql_upgrade -u root -p
+    container_name: x-mariadb
+    <<: *x-logging
+    restart: unless-stopped
+    ports:
+      - "3306:3306" # expose MariaDB to host on port 3306
+    volumes:
+      - appwrite-mariadb:/var/lib/mysql:rw
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootsecretpassword
+      - MYSQL_DATABASE=appwrite
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+      - MARIADB_AUTO_UPGRADE=1
+    command: 'mysqld --innodb-flush-method=fsync'
+
+volumes:
+  appwrite-mariadb:

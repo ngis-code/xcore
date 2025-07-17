@@ -53,7 +53,7 @@ services:
       - appwrite-sites:/storage/sites:rw
       - appwrite-builds:/storage/builds:rw
     depends_on:
-      - mariadb
+      
       - redis
 #      - clamav
     environment:
@@ -166,7 +166,7 @@ services:
       - _APP_AUTH_CUSTOM_PROVIDER_USER_URL
 
   nginx-proxy:
-    image: nginx:1.25-alpine
+    image: nginx:1.25
     container_name: xcore-nginx-proxy
     <<: *x-logging
     restart: unless-stopped
@@ -236,7 +236,9 @@ services:
     networks:
       - appwrite
     depends_on:
-      - mariadb
+    
+
+
       - redis
     environment:
       - _APP_ENV
@@ -265,8 +267,8 @@ services:
     networks:
       - appwrite
     depends_on:
+   
       - redis
-      - mariadb
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -291,8 +293,8 @@ services:
     networks:
       - appwrite
     depends_on:
+     
       - redis
-      - mariadb
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -319,8 +321,8 @@ services:
     networks:
       - appwrite
     depends_on:
+     
       - redis
-      - mariadb
     volumes:
       - appwrite-uploads:/storage/uploads:rw
       - appwrite-cache:/storage/cache:rw
@@ -382,8 +384,8 @@ services:
     networks:
       - appwrite
     depends_on:
+     
       - redis
-      - mariadb
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -408,8 +410,8 @@ services:
     networks:
       - appwrite
     depends_on:
+     
       - redis
-      - mariadb
     volumes:
       - appwrite-functions:/storage/functions:rw
       - appwrite-sites:/storage/sites:rw
@@ -476,8 +478,8 @@ services:
     networks:
       - appwrite
     depends_on:
+    
       - redis
-      - mariadb
     volumes:
       - appwrite-config:/storage/config:rw
       - appwrite-certificates:/storage/certificates:rw
@@ -511,8 +513,8 @@ services:
     networks:
       - appwrite
     depends_on:
+  
       - redis
-      - mariadb
       - openruntimes-executor
     environment:
       - _APP_ENV
@@ -637,7 +639,7 @@ services:
     volumes:
       - appwrite-imports:/storage/imports:rw
     depends_on:
-      - mariadb
+      - redis
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -706,8 +708,8 @@ services:
     networks:
       - appwrite
     depends_on:
+
       - redis
-      - mariadb
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -735,8 +737,8 @@ services:
     networks:
       - appwrite
     depends_on:
+
       - redis
-      - mariadb
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -764,7 +766,6 @@ services:
       - appwrite
     depends_on:
       - redis
-      - mariadb
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -791,8 +792,8 @@ services:
     networks:
       - appwrite
     depends_on:
-      - mariadb
       - redis
+    
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -816,8 +817,8 @@ services:
     networks:
       - appwrite
     depends_on:
-      - mariadb
       - redis
+  
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -841,8 +842,8 @@ services:
     networks:
       - appwrite
     depends_on:
-      - mariadb
       - redis
+
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -927,25 +928,11 @@ services:
       - OPR_EXECUTOR_STORAGE_WASABI_REGION=$_APP_STORAGE_WASABI_REGION
       - OPR_EXECUTOR_STORAGE_WASABI_BUCKET=$_APP_STORAGE_WASABI_BUCKET
 
-  mariadb:
-    image: mariadb:10.11 # fix issues when upgrading using: mysql_upgrade -u root -p
-    container_name: xcore-mariadb
-    <<: *x-logging
-    restart: unless-stopped
-    networks:
-      - appwrite
-    volumes:
-      - appwrite-mariadb:/var/lib/mysql:rw
-    environment:
-      - MYSQL_ROOT_PASSWORD=${_APP_DB_ROOT_PASS}
-      - MYSQL_DATABASE=${_APP_DB_SCHEMA}
-      - MYSQL_USER=${_APP_DB_USER}
-      - MYSQL_PASSWORD=${_APP_DB_PASS}
-      - MARIADB_AUTO_UPGRADE=1
-    command: 'mysqld --innodb-flush-method=fsync'
+  
+
 
   redis:
-    image: redis:7.2.4-alpine
+    image: redis:7.2.4
     container_name: xcore-redis
     <<: *x-logging
     restart: unless-stopped
@@ -977,7 +964,7 @@ networks:
     name: runtimes
 
 volumes:
-  appwrite-mariadb:
+
   appwrite-redis:
   appwrite-cache:
   appwrite-uploads:
