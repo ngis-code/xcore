@@ -49,8 +49,8 @@ services:
       - appwrite-cache:/storage/cache:rw
       - appwrite-config:/storage/config:rw
       - appwrite-certificates:/storage/certificates:rw
-      # appwrite-functions:/storage/functions:rw
-      - /srv/appwrite-storage/functions:/storage/functions:rw
+      - appwrite-functions:/storage/functions:rw
+      # - /srv/appwrite-storage/functions:/storage/functions:rw
       - appwrite-sites:/storage/sites:rw
       - appwrite-builds:/storage/builds:rw
     depends_on:
