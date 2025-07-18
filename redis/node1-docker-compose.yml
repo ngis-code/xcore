@@ -1,0 +1,55 @@
+version: '3'
+services:
+  redis-1:
+    image: redis:latest
+    container_name: redis-1
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: >
+      redis-server --cluster-enabled yes
+                   --cluster-config-file nodes.conf
+                   --appendonly yes
+                   --port 6379
+                   --cluster-announce-ip 172.25.5.29
+                   --cluster-announce-port 6379
+                   --cluster-announce-bus-port 16379
+    volumes:
+      - ./data1:/data
+    network_mode: host
+
+  redis-2:
+    image: redis:latest
+    container_name: redis-2
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    command: >
+      redis-server --cluster-enabled yes
+                   --cluster-config-file nodes.conf
+                   --appendonly yes
+                   --port 6380
+                   --cluster-announce-ip 172.25.5.29
+                   --cluster-announce-port 6380
+                   --cluster-announce-bus-port 16380
+    volumes:
+      - ./data2:/data
+    network_mode: host
+
+  redis-3:
+    image: redis:latest
+    container_name: redis-3
+    restart: unless-stopped
+    ports:
+      - "6381:6379"
+    command: >
+      redis-server --cluster-enabled yes
+                   --cluster-config-file nodes.conf
+                   --appendonly yes
+                   --port 6381
+                   --cluster-announce-ip 172.25.5.29
+                   --cluster-announce-port 6381
+                   --cluster-announce-bus-port 16381
+    volumes:
+      - ./data3:/data
+    network_mode: host
