@@ -49,8 +49,8 @@ services:
       - appwrite-cache:/storage/cache:rw
       - appwrite-config:/storage/config:rw
       - appwrite-certificates:/storage/certificates:rw
-      # - appwrite-functions:/storage/functions:rw
-      - /srv/appwrite-storage/functions:/storage/functions:rw
+      - appwrite-functions:/storage/functions:rw
+      # - /srv/appwrite-storage/functions:/storage/functions:rw
       - appwrite-sites:/storage/sites:rw
       - appwrite-builds:/storage/builds:rw
     depends_on:
@@ -327,8 +327,8 @@ services:
     volumes:
       - appwrite-uploads:/storage/uploads:rw
       - appwrite-cache:/storage/cache:rw
-      # - appwrite-functions:/storage/functions:rw
-      - /srv/appwrite-storage/functions:/storage/functions:rw
+      - appwrite-functions:/storage/functions:rw
+      # - /srv/appwrite-storage/functions:/storage/functions:rw
       - appwrite-sites:/storage/sites:rw
       - appwrite-builds:/storage/builds:rw
       - appwrite-certificates:/storage/certificates:rw
@@ -415,8 +415,8 @@ services:
      
       - redis
     volumes:
-      # - appwrite-functions:/storage/functions:rw
-      - /srv/appwrite-storage/functions:/storage/functions:rw
+      - appwrite-functions:/storage/functions:rw
+      # - /srv/appwrite-storage/functions:/storage/functions:rw
       - appwrite-sites:/storage/sites:rw
       - appwrite-builds:/storage/builds:rw
       - appwrite-uploads:/storage/uploads:rw
@@ -892,8 +892,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - appwrite-builds:/storage/builds:rw
-      # - appwrite-functions:/storage/functions:rw
-      - /srv/appwrite-storage/functions:/storage/functions:rw
+      - appwrite-functions:/storage/functions:rw
+      # - /srv/appwrite-storage/functions:/storage/functions:rw
       - appwrite-sites:/storage/sites:rw
       # Host mount nessessary to share files between executor and runtimes.
       # It's not possible to share mount file between 2 containers without host mount (copying is too slow)
