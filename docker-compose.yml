@@ -53,9 +53,9 @@ services:
       
       - appwrite-sites:/storage/sites:rw
       - appwrite-builds:/storage/builds:rw
-    depends_on:
+    # depends_on:
       
-      - redis
+    #   - redis
 #      - clamav
     environment:
       - _APP_ENV
@@ -236,11 +236,11 @@ services:
       - traefik.http.routers.appwrite_realtime_wss.tls=true
     networks:
       - appwrite
-    depends_on:
+    # depends_on:
     
 
 
-      - redis
+    #   - redis
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -267,9 +267,9 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    depends_on:
+    # depends_on:
    
-      - redis
+    #   - redis
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -293,9 +293,9 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    depends_on:
+    # depends_on:
      
-      - redis
+    #   - redis
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -321,9 +321,9 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    depends_on:
+    # depends_on:
      
-      - redis
+    #   - redis
     volumes:
       - appwrite-uploads:/storage/uploads:rw
       - appwrite-cache:/storage/cache:rw
@@ -384,9 +384,9 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    depends_on:
+    # depends_on:
      
-      - redis
+    #   - redis
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -410,9 +410,9 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    depends_on:
+    # depends_on:
      
-      - redis
+    #   - redis
     volumes:
       - appwrite-functions:/storage/functions:rw
       - appwrite-sites:/storage/sites:rw
@@ -478,9 +478,9 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    depends_on:
+    # depends_on:
     
-      - redis
+    #   - redis
     volumes:
       - appwrite-config:/storage/config:rw
       - appwrite-certificates:/storage/certificates:rw
@@ -515,7 +515,7 @@ services:
       - appwrite
     depends_on:
   
-      - redis
+      # - redis
       - openruntimes-executor
     environment:
       - _APP_ENV
@@ -552,8 +552,8 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    depends_on:
-      - redis
+    # depends_on:
+    #   - redis
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -588,8 +588,8 @@ services:
       - appwrite
     volumes:
       - appwrite-uploads:/storage/uploads:rw
-    depends_on:
-      - redis
+    # depends_on:
+    #   - redis
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -639,8 +639,8 @@ services:
       - appwrite
     volumes:
       - appwrite-imports:/storage/imports:rw
-    depends_on:
-      - redis
+    # depends_on:
+    #   - redis
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -671,8 +671,8 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    depends_on:
-      - redis
+    # depends_on:
+    #   - redis
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -708,9 +708,9 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    depends_on:
+    # depends_on:
 
-      - redis
+    #   - redis
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -737,9 +737,9 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    depends_on:
+    # depends_on:
 
-      - redis
+    #   - redis
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -765,8 +765,8 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    depends_on:
-      - redis
+    # depends_on:
+    #   - redis
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -792,8 +792,8 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    depends_on:
-      - redis
+    # depends_on:
+    #   - redis
     
     environment:
       - _APP_ENV
@@ -817,8 +817,8 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    depends_on:
-      - redis
+    # depends_on:
+    #   - redis
   
     environment:
       - _APP_ENV
@@ -842,8 +842,8 @@ services:
     restart: unless-stopped
     networks:
       - appwrite
-    depends_on:
-      - redis
+    # depends_on:
+    #   - redis
 
     environment:
       - _APP_ENV
@@ -933,20 +933,20 @@ services:
   
 
 
-  redis:
-    image: redis:7.2.4
-    container_name: xcore-redis
-    <<: *x-logging
-    restart: unless-stopped
-    command: >
-      redis-server
-      --maxmemory            512mb
-      --maxmemory-policy     allkeys-lru
-      --maxmemory-samples    5
-    networks:
-      - appwrite
-    volumes:
-      - appwrite-redis:/data:rw
+  # redis:
+  #   image: redis:7.2.4
+  #   container_name: xcore-redis
+  #   <<: *x-logging
+  #   restart: unless-stopped
+  #   command: >
+  #     redis-server
+  #     --maxmemory            512mb
+  #     --maxmemory-policy     allkeys-lru
+  #     --maxmemory-samples    5
+  #   networks:
+  #     - appwrite
+  #   volumes:
+  #     - appwrite-redis:/data:rw
 
   # clamav:
   #   image: appwrite/clamav:1.2.0
@@ -967,7 +967,7 @@ networks:
 
 volumes:
 
-  appwrite-redis:
+  # appwrite-redis:
   appwrite-cache:
   appwrite-uploads:
   appwrite-imports:
