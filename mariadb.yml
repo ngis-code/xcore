@@ -9,7 +9,7 @@ x-logging: &x-logging
 
 services:
   mariadb:
-    image: mariadb:10.11 # fix issues when upgrading using: mysql_upgrade -u root -p
+    image: mariadb:10.11
     container_name: x-mariadb
     <<: *x-logging
     restart: unless-stopped
@@ -25,5 +25,21 @@ services:
       - MARIADB_AUTO_UPGRADE=1
     command: 'mysqld --innodb-flush-method=fsync'
 
+  redis:
+    image: redis:7.2.4
+    container_name: x-redis
+    <<: *x-logging
+    restart: unless-stopped
+    ports:
+      - "6379:6379" # expose Redis to host on port 6379
+    volumes:
+      - appwrite-redis:/data:rw
+    command: >
+      redis-server
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --maxmemory-samples 5
+
 volumes:
   appwrite-mariadb:
+  appwrite-redis:
