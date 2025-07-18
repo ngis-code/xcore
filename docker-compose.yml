@@ -415,8 +415,8 @@ services:
      
       - redis
     volumes:
-      # - appwrite-functions:/storage/functions:rw
-      - /srv/appwrite-storage/functions:/storage/functions:rw
+      - appwrite-functions:/storage/functions:rw
+      # - /srv/appwrite-storage/functions:/storage/functions:rw
       - appwrite-sites:/storage/sites:rw
       - appwrite-builds:/storage/builds:rw
       - appwrite-uploads:/storage/uploads:rw
