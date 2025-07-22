@@ -6,7 +6,7 @@ x-logging: &x-logging
       max-size: '10m'
 services:
   traefik:
-    image: 192.168.100.116:5050/xcore-traefik:2.11
+    image: traefik:2.11
     container_name: xcore-traefik
     <<: *x-logging
     command:
@@ -32,7 +32,12 @@ services:
       - appwrite
 
   appwrite:
-    image: 192.168.100.116:5050/xcore:1.7.4
+    build:
+      context: .
+      args:
+        DEBUG: false
+        TESTING: true
+        VERSION: dev
     container_name: xcore
     <<: *x-logging
     restart: unless-stopped
@@ -45,8 +50,13 @@ services:
       - appwrite-config:/storage/config:rw
       - appwrite-certificates:/storage/certificates:rw
       - appwrite-functions:/storage/functions:rw
+      
       - appwrite-sites:/storage/sites:rw
       - appwrite-builds:/storage/builds:rw
+    # depends_on:
+      
+    #   - redis
+#      - clamav
     environment:
       - _APP_ENV
       - _APP_WORKER_PER_CORE
@@ -157,7 +167,7 @@ services:
       - _APP_AUTH_CUSTOM_PROVIDER_USER_URL
 
   nginx-proxy:
-    image: 192.168.100.116:5050/xcore-proxy:1.0.0
+    image: nginx:1.25
     container_name: xcore-nginx-proxy
     <<: *x-logging
     restart: unless-stopped
@@ -205,7 +215,7 @@ services:
 #      - traefik.http.routers.appwrite_console_https.tls=true
 
   appwrite-realtime:
-    image: 192.168.100.116:5050/xcore-base:1.7.4
+    image: appwrite/appwrite:1.7.4
     entrypoint: realtime
     container_name: xcore-realtime
     <<: *x-logging
