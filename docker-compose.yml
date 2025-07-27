@@ -165,6 +165,8 @@ services:
       - appwrite
     depends_on:
       - appwrite
+      volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     labels:
       - "traefik.enable=true"
       - "traefik.constraint-label-stack=appwrite"
