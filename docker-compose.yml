@@ -873,7 +873,7 @@ services:
     <<: *x-logging
     restart: unless-stopped
     stop_signal: SIGINT
-    image: lbyron7/xcore-base:1.7.4
+    image: openruntimes/executor:0.8.0
     networks:
       - appwrite
       - runtimes
