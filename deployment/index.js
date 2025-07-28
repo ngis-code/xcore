@@ -731,30 +731,73 @@ class DockerImageManager {
       console.log(chalk.gray(`  ${index + 1}. ${img.fullName} (${img.size})`));
     });
 
-    const confirmAnswer = await inquirer.prompt([
+    // Ask user what type of bulk upload they want
+    const uploadType = await inquirer.prompt([
       {
-        type: 'confirm',
-        name: 'confirm',
-        message: `Upload ALL ${images.length} Docker images to Appwrite storage?`,
-        default: false
+        type: 'list',
+        name: 'type',
+        message: 'What type of bulk upload do you want?',
+        choices: [
+          {
+            name: '📤 Upload ALL Docker images',
+            value: 'all'
+          },
+          {
+            name: '🎯 Select specific images to upload',
+            value: 'select'
+          },
+          {
+            name: '🚪 Cancel',
+            value: 'cancel'
+          }
+        ]
       }
     ]);
 
-    if (!confirmAnswer.confirm) {
+    if (uploadType.type === 'cancel') {
       console.log(chalk.yellow('Bulk upload cancelled.'));
       return;
     }
 
-    console.log(chalk.blue(`\n🚀 Starting bulk upload of ${images.length} images...\n`));
+    let selectedImages = [];
+    
+    if (uploadType.type === 'all') {
+      // Upload all images
+      const confirmAnswer = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'confirm',
+          message: `Upload ALL ${images.length} Docker images to Appwrite storage?`,
+          default: false
+        }
+      ]);
+
+      if (!confirmAnswer.confirm) {
+        console.log(chalk.yellow('Bulk upload cancelled.'));
+        return;
+      }
+      
+      selectedImages = images;
+    } else if (uploadType.type === 'select') {
+      // Let user select specific images
+      selectedImages = await this.selectImages(images);
+      
+      if (selectedImages.length === 0) {
+        console.log(chalk.yellow('No images selected. Returning to main menu.'));
+        return;
+      }
+    }
+
+    console.log(chalk.blue(`\n🚀 Starting bulk upload of ${selectedImages.length} images...\n`));
     
     const savedImages = [];
     const uploadedImages = [];
     const reloadedImages = [];
     let currentImage = 1;
     
-    // Process all images
-    for (const image of images) {
-      console.log(chalk.blue(`\n[${currentImage}/${images.length}] Processing ${image.fullName}...`));
+    // Process all selected images
+    for (const image of selectedImages) {
+      console.log(chalk.blue(`\n[${currentImage}/${selectedImages.length}] Processing ${image.fullName}...`));
       
       try {
         // Save image (no tagging prompts in bulk mode)
@@ -776,13 +819,13 @@ class DockerImageManager {
             ...savedImage,
             uploadResult
           });
-          console.log(chalk.green(`✅ [${currentImage}/${images.length}] ${image.fullName} completed`));
+          console.log(chalk.green(`✅ [${currentImage}/${selectedImages.length}] ${image.fullName} completed`));
         } catch (error) {
-          console.log(chalk.red(`❌ [${currentImage}/${images.length}] Upload failed for ${image.fullName}: ${error.message}`));
+          console.log(chalk.red(`❌ [${currentImage}/${selectedImages.length}] Upload failed for ${image.fullName}: ${error.message}`));
         }
         
       } catch (error) {
-        console.log(chalk.red(`❌ [${currentImage}/${images.length}] Save failed for ${image.fullName}: ${error.message}`));
+        console.log(chalk.red(`❌ [${currentImage}/${selectedImages.length}] Save failed for ${image.fullName}: ${error.message}`));
       }
       
       currentImage++;
@@ -790,7 +833,7 @@ class DockerImageManager {
     
     // Final Summary
     console.log(chalk.green.bold(`\n🎉 Bulk upload completed!`));
-    console.log(chalk.green(`- Total images processed: ${images.length}`));
+    console.log(chalk.green(`- Total images selected: ${selectedImages.length}`));
     console.log(chalk.green(`- Images saved: ${savedImages.length}`));
     console.log(chalk.green(`- Images reloaded: ${reloadedImages.length}`));
     console.log(chalk.green(`- Images uploaded: ${uploadedImages.length}`));
@@ -802,7 +845,7 @@ class DockerImageManager {
       });
     }
     
-    const failedUploads = images.length - uploadedImages.length;
+    const failedUploads = selectedImages.length - uploadedImages.length;
     if (failedUploads > 0) {
       console.log(chalk.red(`\n⚠️  ${failedUploads} images failed to upload`));
     }
@@ -883,29 +926,72 @@ class DockerImageManager {
       console.log(chalk.gray(`  ${index + 1}. ${file.name} (${file.displaySize}) - ${file.displayDate}`));
     });
 
-    const confirmAnswer = await inquirer.prompt([
+    // Ask user what type of bulk download they want
+    const downloadType = await inquirer.prompt([
       {
-        type: 'confirm',
-        name: 'confirm',
-        message: `Download and load ALL ${files.length} Docker images?`,
-        default: false
+        type: 'list',
+        name: 'type',
+        message: 'What type of bulk download do you want?',
+        choices: [
+          {
+            name: '📥 Download ALL files from storage',
+            value: 'all'
+          },
+          {
+            name: '🎯 Select specific files to download',
+            value: 'select'
+          },
+          {
+            name: '🚪 Cancel',
+            value: 'cancel'
+          }
+        ]
       }
     ]);
 
-    if (!confirmAnswer.confirm) {
+    if (downloadType.type === 'cancel') {
       console.log(chalk.yellow('Bulk download cancelled.'));
       return;
     }
 
-    console.log(chalk.blue(`\n⚡ Starting bulk download of ${files.length} files...\n`));
+    let selectedFiles = [];
+    
+    if (downloadType.type === 'all') {
+      // Download all files
+      const confirmAnswer = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'confirm',
+          message: `Download and load ALL ${files.length} Docker images?`,
+          default: false
+        }
+      ]);
+
+      if (!confirmAnswer.confirm) {
+        console.log(chalk.yellow('Bulk download cancelled.'));
+        return;
+      }
+      
+      selectedFiles = files;
+    } else if (downloadType.type === 'select') {
+      // Let user select specific files
+      selectedFiles = await this.selectFilesToDownload(files);
+      
+      if (selectedFiles.length === 0) {
+        console.log(chalk.yellow('No files selected. Returning to main menu.'));
+        return;
+      }
+    }
+
+    console.log(chalk.blue(`\n⚡ Starting bulk download of ${selectedFiles.length} files...\n`));
     
     const downloadedFiles = [];
     const loadedImages = [];
     let currentFile = 1;
     
-    // Process all files
-    for (const file of files) {
-      console.log(chalk.blue(`\n[${currentFile}/${files.length}] Processing ${file.name}...`));
+    // Process all selected files
+    for (const file of selectedFiles) {
+      console.log(chalk.blue(`\n[${currentFile}/${selectedFiles.length}] Processing ${file.name}...`));
       
       try {
         // Download file
@@ -916,13 +1002,13 @@ class DockerImageManager {
         try {
           const loadedImage = await this.loadDockerImage(downloadedFile);
           loadedImages.push(loadedImage);
-          console.log(chalk.green(`✅ [${currentFile}/${files.length}] ${file.name} completed`));
+          console.log(chalk.green(`✅ [${currentFile}/${selectedFiles.length}] ${file.name} completed`));
         } catch (error) {
-          console.log(chalk.red(`❌ [${currentFile}/${files.length}] Load failed for ${file.name}: ${error.message}`));
+          console.log(chalk.red(`❌ [${currentFile}/${selectedFiles.length}] Load failed for ${file.name}: ${error.message}`));
         }
         
       } catch (error) {
-        console.log(chalk.red(`❌ [${currentFile}/${files.length}] Download failed for ${file.name}: ${error.message}`));
+        console.log(chalk.red(`❌ [${currentFile}/${selectedFiles.length}] Download failed for ${file.name}: ${error.message}`));
       }
       
       currentFile++;
@@ -930,7 +1016,7 @@ class DockerImageManager {
     
     // Final Summary
     console.log(chalk.green.bold(`\n🎉 Bulk download completed!`));
-    console.log(chalk.green(`- Total files in storage: ${files.length}`));
+    console.log(chalk.green(`- Total files selected: ${selectedFiles.length}`));
     console.log(chalk.green(`- Files downloaded: ${downloadedFiles.length}`));
     console.log(chalk.green(`- Images loaded into Docker: ${loadedImages.length}`));
     
@@ -951,7 +1037,7 @@ class DockerImageManager {
       });
     }
     
-    const failedDownloads = files.length - downloadedFiles.length;
+    const failedDownloads = selectedFiles.length - downloadedFiles.length;
     if (failedDownloads > 0) {
       console.log(chalk.red(`\n⚠️  ${failedDownloads} files failed to download`));
     }
