@@ -157,7 +157,7 @@ services:
       - _APP_AUTH_CUSTOM_PROVIDER_USER_URL
 
   nginx-proxy:
-    image: xcore-proxy:1.0.1
+    image: xcore-proxy:1.0.0
     container_name: xcore-nginx-proxy
     <<: *x-logging
     restart: unless-stopped
