@@ -6,7 +6,7 @@ x-logging: &x-logging
       max-size: '10m'
 services:
   traefik:
-    image: lbyron7/xcore-traefik:2.11
+    image: xcore-traefik:2.11
     container_name: xcore-traefik
     <<: *x-logging
     command:
@@ -32,7 +32,7 @@ services:
       - appwrite
 
   appwrite:
-    image: lbyron7/xcore:latest
+    image: xcore:1.7.4
     container_name: xcore
     <<: *x-logging
     restart: unless-stopped
@@ -157,14 +157,14 @@ services:
       - _APP_AUTH_CUSTOM_PROVIDER_USER_URL
 
   nginx-proxy:
-    image: lbyron7/xcore-proxy:1.0.0
+    image: xcore-proxy:1.0.1
     container_name: xcore-nginx-proxy
     <<: *x-logging
     restart: unless-stopped
     networks:
       - appwrite
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    # volumes:
+    #   - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - appwrite
     labels:
@@ -205,7 +205,7 @@ services:
 #      - traefik.http.routers.appwrite_console_https.tls=true
 
   appwrite-realtime:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: realtime
     container_name: xcore-realtime
     <<: *x-logging
@@ -250,7 +250,7 @@ services:
       - _APP_LOGGING_CONFIG
 
   appwrite-worker-audits:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: worker-audits
     <<: *x-logging
     container_name: xcore-worker-audits
@@ -276,7 +276,7 @@ services:
       - _APP_LOGGING_CONFIG
 
   appwrite-worker-webhooks:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: worker-webhooks
     <<: *x-logging
     container_name: xcore-worker-webhooks
@@ -304,7 +304,7 @@ services:
       - _APP_LOGGING_CONFIG
 
   appwrite-worker-deletes:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: worker-deletes
     <<: *x-logging
     container_name: xcore-worker-deletes
@@ -367,7 +367,7 @@ services:
       - _APP_EMAIL_CERTIFICATES
 
   appwrite-worker-databases:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: worker-databases
     <<: *x-logging
     container_name: xcore-worker-databases
@@ -393,7 +393,7 @@ services:
       - _APP_LOGGING_CONFIG
 
   appwrite-worker-builds:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: worker-builds
     <<: *x-logging
     container_name: xcore-worker-builds
@@ -461,7 +461,7 @@ services:
       - _APP_DOMAIN_SITES
 
   appwrite-worker-certificates:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: worker-certificates
     <<: *x-logging
     container_name: xcore-worker-certificates
@@ -496,7 +496,7 @@ services:
       - _APP_LOGGING_CONFIG
 
   appwrite-worker-functions:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: worker-functions
     <<: *x-logging
     container_name: xcore-worker-functions
@@ -535,7 +535,7 @@ services:
       - _APP_LOGGING_CONFIG
 
   appwrite-worker-mails:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: worker-mails
     <<: *x-logging
     container_name: xcore-worker-mails
@@ -569,7 +569,7 @@ services:
       - _APP_OPTIONS_FORCE_HTTPS
 
   appwrite-worker-messaging:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: worker-messaging
     <<: *x-logging
     container_name: xcore-worker-messaging
@@ -620,7 +620,7 @@ services:
       - _APP_STORAGE_WASABI_BUCKET
 
   appwrite-worker-migrations:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: worker-migrations
     <<: *x-logging
     container_name: xcore-worker-migrations
@@ -654,7 +654,7 @@ services:
       - _APP_MIGRATIONS_FIREBASE_CLIENT_SECRET
 
   appwrite-task-maintenance:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: maintenance
     <<: *x-logging
     container_name: xcore-task-maintenance
@@ -691,7 +691,7 @@ services:
       - _APP_MAINTENANCE_RETENTION_SCHEDULES
 
   appwrite-task-stats-resources:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     container_name: xcore-task-stats-resources
     entrypoint: stats-resources
     <<: *x-logging
@@ -720,7 +720,7 @@ services:
       - _APP_STATS_RESOURCES_INTERVAL
 
   appwrite-worker-stats-resources:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: worker-stats-resources
     container_name: xcore-worker-stats-resources
     <<: *x-logging
@@ -748,7 +748,7 @@ services:
       - _APP_STATS_RESOURCES_INTERVAL
 
   appwrite-worker-stats-usage:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: worker-stats-usage
     container_name: xcore-worker-stats-usage
     <<: *x-logging
@@ -775,7 +775,7 @@ services:
       - _APP_USAGE_AGGREGATION_INTERVAL
 
   appwrite-task-scheduler-functions:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: schedule-functions
     container_name: xcore-task-scheduler-functions
     <<: *x-logging
@@ -800,7 +800,7 @@ services:
       - _APP_DB_PASS
 
   appwrite-task-scheduler-executions:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: schedule-executions
     container_name: xcore-task-scheduler-executions
     <<: *x-logging
@@ -825,7 +825,7 @@ services:
       - _APP_DB_PASS
 
   appwrite-task-scheduler-messages:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     entrypoint: schedule-messages
     container_name: xcore-task-scheduler-messages
     <<: *x-logging
@@ -850,7 +850,7 @@ services:
       - _APP_DB_PASS
 
   appwrite-assistant:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     container_name: xcore-assistant
     <<: *x-logging
     restart: unless-stopped
@@ -860,7 +860,7 @@ services:
       - _APP_ASSISTANT_OPENAI_API_KEY
       
   appwrite-browser:
-    image: lbyron7/xcore-base:1.7.4
+    image: xcore-base:1.7.4
     container_name: xcore-browser
     <<: *x-logging
     restart: unless-stopped
