@@ -1026,6 +1026,21 @@ class DockerImageManager {
     console.log(chalk.gray('  • Remove ALL custom Docker networks'));
     console.log(chalk.gray('  • Leave only default networks (bridge, host, none, ingress)'));
     
+    // Check Docker permissions first
+    console.log(chalk.blue('\n🔍 Checking Docker permissions...'));
+    try {
+      execSync('docker ps', { stdio: 'ignore' });
+      console.log(chalk.green('✅ Docker access confirmed'));
+    } catch (error) {
+      console.log(chalk.red('❌ Docker permission denied!'));
+      console.log(chalk.yellow('\nTo fix this, run one of these commands:'));
+      console.log(chalk.gray('  • sudo usermod -aG docker $USER (then log out and back in)'));
+      console.log(chalk.gray('  • sudo chmod 666 /var/run/docker.sock'));
+      console.log(chalk.gray('  • Or run this script with sudo: sudo npm start'));
+      console.log(chalk.yellow('\nAfter fixing permissions, run this script again.'));
+      return;
+    }
+    
     // Get current Docker state for confirmation
     let containerCount = 0;
     let imageCount = 0;
@@ -1050,8 +1065,9 @@ class DockerImageManager {
       networkCount = networksOutput.trim().split('\n').filter(line => line.length > 0).length;
       
     } catch (error) {
-      // If any command fails, assume 0
-      console.log(chalk.gray('Could not determine current Docker state'));
+      console.log(chalk.red(`❌ Error checking Docker state: ${error.message}`));
+      console.log(chalk.yellow('Please check your Docker installation and permissions.'));
+      return;
     }
     
     if (containerCount > 0 || imageCount > 0 || volumeCount > 0 || networkCount > 0) {
@@ -1249,6 +1265,19 @@ try {
 } catch (error) {
   console.error(chalk.red('❌ Docker is not installed or not accessible.'));
   console.error(chalk.gray('Make sure Docker is installed and running.'));
+  process.exit(1);
+}
+
+// Check Docker permissions
+try {
+  execSync('docker ps', { stdio: 'ignore' });
+} catch (error) {
+  console.error(chalk.red('❌ Docker permission denied!'));
+  console.error(chalk.yellow('\nTo fix this, run one of these commands:'));
+  console.error(chalk.gray('  • sudo usermod -aG docker $USER (then log out and back in)'));
+  console.error(chalk.gray('  • sudo chmod 666 /var/run/docker.sock'));
+  console.error(chalk.gray('  • Or run this script with sudo: sudo npm start'));
+  console.error(chalk.yellow('\nAfter fixing permissions, run this script again.'));
   process.exit(1);
 }
 
