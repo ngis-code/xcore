@@ -157,14 +157,14 @@ services:
       - _APP_AUTH_CUSTOM_PROVIDER_USER_URL
 
   nginx-proxy:
-    image: xcore-proxy:1.0.0
+    image: xcore-proxy:1.0.1
     container_name: xcore-nginx-proxy
     <<: *x-logging
     restart: unless-stopped
     networks:
       - appwrite
     volumes:
-      - nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - appwrite
     labels:
