@@ -56,6 +56,10 @@ class DockerImageManager {
             value: 'nuclear-cleanup'
           },
           {
+            name: '🏷️ Batch Tag & Rename Docker images',
+            value: 'batch-tag'
+          },
+          {
             name: '🚪 Exit',
             value: 'exit'
           }
@@ -1347,6 +1351,266 @@ class DockerImageManager {
     }
   }
 
+  async runBatchTagMode() {
+    // Get all Docker images
+    const images = await this.getDockerImages();
+    
+    if (images.length === 0) {
+      console.log(chalk.yellow('No Docker images found.'));
+      return;
+    }
+
+    // Show confirmation for bulk upload
+    console.log(chalk.blue(`\nFound ${images.length} Docker images:`));
+    images.forEach((img, index) => {
+      console.log(chalk.gray(`  ${index + 1}. ${img.fullName} (${img.size})`));
+    });
+
+    // Ask user if they want to batch tag and rename images
+    const batchTagAnswer = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'batchTag',
+        message: 'Would you like to batch tag and rename these Docker images before uploading?',
+        default: false
+      }
+    ]);
+
+    if (!batchTagAnswer.batchTag) {
+      console.log(chalk.yellow('Skipping batch tagging. Proceeding with direct upload.'));
+      return;
+    }
+
+    const taggedImages = await this.batchTagAndRenameImages(images);
+    
+    // Filter out images that were skipped or kept as is
+    const imagesToUpload = taggedImages.filter(img => img.action !== 'skip');
+
+    if (imagesToUpload.length === 0) {
+      console.log(chalk.yellow('No images to upload after batch tagging. Exiting batch tag mode.'));
+      return;
+    }
+
+    // Setup Appwrite for upload
+    await this.setupAppwrite();
+
+    console.log(chalk.blue(`\n🚀 Starting bulk upload of ${imagesToUpload.length} images...\n`));
+    
+    const savedImages = [];
+    const uploadedImages = [];
+    const reloadedImages = [];
+    let currentImage = 1;
+    
+    // Process all selected images
+    for (const image of imagesToUpload) {
+      console.log(chalk.blue(`\n[${currentImage}/${imagesToUpload.length}] Processing ${image.fullName}...`));
+      
+      try {
+        // Save image (no tagging prompts in bulk mode)
+        const savedImage = await this.saveDockerImage(image, true); // Pass true for bulk mode
+        savedImages.push(savedImage);
+        
+        // Auto-reload into Docker
+        try {
+          const reloadedImage = await this.loadDockerImage(savedImage);
+          reloadedImages.push(reloadedImage);
+        } catch (error) {
+          console.log(chalk.yellow(`⚠️  Could not reload ${image.fullName}: ${error.message}`));
+        }
+        
+        // Upload to Appwrite
+        try {
+          const uploadResult = await this.uploadToAppwrite(savedImage);
+          uploadedImages.push({
+            ...savedImage,
+            uploadResult
+          });
+          console.log(chalk.green(`✅ [${currentImage}/${imagesToUpload.length}] ${image.fullName} completed`));
+        } catch (error) {
+          console.log(chalk.red(`❌ [${currentImage}/${imagesToUpload.length}] Upload failed for ${image.fullName}: ${error.message}`));
+        }
+        
+      } catch (error) {
+        console.log(chalk.red(`❌ [${currentImage}/${imagesToUpload.length}] Save failed for ${image.fullName}: ${error.message}`));
+      }
+      
+      currentImage++;
+    }
+    
+    // Final Summary
+    console.log(chalk.green.bold(`\n🎉 Batch Tag & Upload completed!`));
+    console.log(chalk.green(`- Total images processed: ${images.length}`));
+    console.log(chalk.green(`- Images to upload: ${imagesToUpload.length}`));
+    console.log(chalk.green(`- Images saved: ${savedImages.length}`));
+    console.log(chalk.green(`- Images reloaded: ${reloadedImages.length}`));
+    console.log(chalk.green(`- Images uploaded: ${uploadedImages.length}`));
+    
+    if (uploadedImages.length > 0) {
+      console.log(chalk.blue(`\n📁 Successfully uploaded ${uploadedImages.length} images:`));
+      uploadedImages.forEach(img => {
+        console.log(chalk.gray(`  • ${img.fullName} → ${img.uploadResult.$id}`));
+      });
+    }
+    
+    const failedUploads = imagesToUpload.length - uploadedImages.length;
+    if (failedUploads > 0) {
+      console.log(chalk.red(`\n⚠️  ${failedUploads} images failed to upload`));
+    }
+    
+    // Cleanup
+    if (savedImages.length > 0) {
+      await this.cleanup(savedImages);
+    }
+  }
+
+  async batchTagAndRenameImages(images) {
+    console.log(chalk.blue('\n🏷️  Batch Tag & Rename Mode'));
+    console.log(chalk.gray('Set up all your image names and tags before uploading\n'));
+    
+    const taggedImages = [];
+    
+    for (let i = 0; i < images.length; i++) {
+      const image = images[i];
+      console.log(chalk.blue(`\n[${i + 1}/${images.length}] Processing: ${image.fullName} (${image.size})`));
+      
+      const tagAnswer = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'action',
+          message: 'What would you like to do with this image?',
+          choices: [
+            {
+              name: `📝 Rename/tag this image`,
+              value: 'rename'
+            },
+            {
+              name: `✅ Keep original name: ${image.fullName}`,
+              value: 'keep'
+            },
+            {
+              name: `⏭️  Skip this image`,
+              value: 'skip'
+            }
+          ]
+        }
+      ]);
+      
+      if (tagAnswer.action === 'skip') {
+        console.log(chalk.yellow(`  ⏭️  Skipped ${image.fullName}`));
+        continue;
+      }
+      
+      if (tagAnswer.action === 'keep') {
+        taggedImages.push({
+          ...image,
+          finalName: image.fullName,
+          action: 'keep'
+        });
+        console.log(chalk.green(`  ✅ Keeping: ${image.fullName}`));
+        continue;
+      }
+      
+      // Rename/tag the image
+      const renameDetails = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'repository',
+          message: 'Enter new repository name:',
+          default: image.repository,
+          validate: input => input.trim().length > 0 || 'Repository name cannot be empty'
+        },
+        {
+          type: 'input',
+          name: 'tag',
+          message: 'Enter new tag:',
+          default: image.tag,
+          validate: input => input.trim().length > 0 || 'Tag cannot be empty'
+        }
+      ]);
+      
+      const newFullName = `${renameDetails.repository}:${renameDetails.tag}`;
+      
+      // Create the new Docker tag
+      const tagSpinner = ora(`Creating tag ${newFullName}...`).start();
+      
+      try {
+        execSync(`docker tag ${image.fullName} ${newFullName}`, { stdio: 'ignore' });
+        tagSpinner.succeed(`Created tag ${newFullName}`);
+        
+        taggedImages.push({
+          ...image,
+          repository: renameDetails.repository,
+          tag: renameDetails.tag,
+          fullName: newFullName,
+          finalName: newFullName,
+          action: 'renamed',
+          originalName: image.fullName
+        });
+        
+        console.log(chalk.green(`  ✅ Renamed: ${image.fullName} → ${newFullName}`));
+        
+      } catch (error) {
+        tagSpinner.fail(`Failed to create tag ${newFullName}`);
+        console.log(chalk.red(`  ❌ Error: ${error.message}`));
+        
+        // Ask if they want to keep the original or try again
+        const retryAnswer = await inquirer.prompt([
+          {
+            type: 'list',
+            name: 'retry',
+            message: 'What would you like to do?',
+            choices: [
+              {
+                name: '🔄 Try renaming again',
+                value: 'retry'
+              },
+              {
+                name: '✅ Keep original name',
+                value: 'keep'
+              },
+              {
+                name: '⏭️  Skip this image',
+                value: 'skip'
+              }
+            ]
+          }
+        ]);
+        
+        if (retryAnswer.retry === 'retry') {
+          i--; // Go back to the same image
+          continue;
+        } else if (retryAnswer.retry === 'keep') {
+          taggedImages.push({
+            ...image,
+            finalName: image.fullName,
+            action: 'keep'
+          });
+          console.log(chalk.green(`  ✅ Keeping: ${image.fullName}`));
+        } else {
+          console.log(chalk.yellow(`  ⏭️  Skipped ${image.fullName}`));
+        }
+      }
+    }
+    
+    // Summary of what was set up
+    console.log(chalk.green.bold('\n📋 Batch Setup Summary:'));
+    console.log(chalk.green(`- Total images processed: ${images.length}`));
+    console.log(chalk.green(`- Images to upload: ${taggedImages.length}`));
+    
+    if (taggedImages.length > 0) {
+      console.log(chalk.blue('\nImages ready for upload:'));
+      taggedImages.forEach((img, index) => {
+        if (img.action === 'renamed') {
+          console.log(chalk.gray(`  ${index + 1}. ${img.originalName} → ${img.finalName}`));
+        } else {
+          console.log(chalk.gray(`  ${index + 1}. ${img.finalName}`));
+        }
+      });
+    }
+    
+    return taggedImages;
+  }
+
   async run() {
     try {
       await this.init();
@@ -1360,7 +1624,7 @@ class DockerImageManager {
       }
 
       // Setup Appwrite for storage access (not needed for remove mode or nuclear cleanup)
-      if (mode !== 'remove' && mode !== 'nuclear-cleanup') {
+      if (mode !== 'remove' && mode !== 'nuclear-cleanup' && mode !== 'batch-tag') {
         await this.setupAppwrite();
       }
 
@@ -1376,6 +1640,8 @@ class DockerImageManager {
         await this.runRemoveMode();
       } else if (mode === 'nuclear-cleanup') {
         await this.runNuclearCleanupMode();
+      } else if (mode === 'batch-tag') {
+        await this.runBatchTagMode();
       }
       
     } catch (error) {
