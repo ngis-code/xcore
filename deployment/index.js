@@ -60,6 +60,10 @@ class DockerImageManager {
             value: 'batch-tag'
           },
           {
+            name: '🐳 Docker Compose Operations',
+            value: 'docker-compose'
+          },
+          {
             name: '🚪 Exit',
             value: 'exit'
           }
@@ -909,6 +913,42 @@ class DockerImageManager {
       });
     }
     
+    // Ask if user wants to run docker compose operations on downloaded images
+    const composeAnswer = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'composeAction',
+        message: 'What would you like to do after downloading?',
+        choices: [
+          {
+            name: '🚀 Automatically run docker compose up -d',
+            value: 'auto-up-d'
+          },
+          {
+            name: '⚡ Automatically run sudo docker compose up -d',
+            value: 'auto-sudo-up-d'
+          },
+          {
+            name: '🐳 Choose docker compose operation manually',
+            value: 'manual'
+          },
+          {
+            name: '🚪 Skip docker compose operations',
+            value: 'skip'
+          }
+        ]
+      }
+    ]);
+
+    if (composeAnswer.composeAction === 'skip') {
+      // Do nothing, just continue to cleanup
+    } else if (composeAnswer.composeAction === 'manual') {
+      await this.runDockerComposeOperation();
+    } else {
+      // Auto-run docker compose
+      await this.autoRunDockerCompose(composeAnswer.composeAction);
+    }
+    
     // Cleanup
     if (downloadedFiles.length > 0) {
       await this.cleanup(downloadedFiles);
@@ -1049,6 +1089,20 @@ class DockerImageManager {
     const failedLoads = downloadedFiles.length - loadedImages.length;
     if (failedLoads > 0) {
       console.log(chalk.red(`\n⚠️  ${failedLoads} downloaded files failed to load into Docker`));
+    }
+    
+    // Ask if user wants to run docker compose operations on downloaded images
+    const composeAnswer = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'runCompose',
+        message: 'Would you like to run docker compose operations on the downloaded images?',
+        default: false
+      }
+    ]);
+
+    if (composeAnswer.runCompose) {
+      await this.runDockerComposeOperation();
     }
     
     // Cleanup
@@ -1611,6 +1665,457 @@ class DockerImageManager {
     return taggedImages;
   }
 
+  async runDockerComposeOperation() {
+    console.log(chalk.blue('\n🐳 Docker Compose Operations'));
+    console.log(chalk.gray('Navigate to saved images directory and run docker compose\n'));
+    
+    // Check if we're in the saved images directory
+    const currentDir = process.cwd();
+    const savedImagesDir = path.resolve(this.savedImagesDir);
+    
+    console.log(chalk.blue(`Current directory: ${currentDir}`));
+    console.log(chalk.blue(`Saved images directory: ${savedImagesDir}`));
+    
+    // Check for docker-compose.yml in current directory
+    const currentComposeFile = path.join(currentDir, 'docker-compose.yml');
+    const savedComposeFile = path.join(savedImagesDir, 'docker-compose.yml');
+    const currentComposeExists = await fs.pathExists(currentComposeFile);
+    const savedComposeExists = await fs.pathExists(savedComposeFile);
+    
+    let targetDirectory = savedImagesDir;
+    let composeFile = savedComposeFile;
+    
+    // If docker-compose.yml exists in current directory, ask user which to use
+    if (currentComposeExists && savedComposeExists) {
+      const directoryChoice = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'directory',
+          message: 'Found docker-compose.yml in both directories. Which would you like to use?',
+          choices: [
+            {
+              name: `📁 Current directory: ${currentDir}`,
+              value: 'current'
+            },
+            {
+              name: `📁 Saved images directory: ${savedImagesDir}`,
+              value: 'saved'
+            }
+          ]
+        }
+      ]);
+      
+      if (directoryChoice.directory === 'current') {
+        targetDirectory = currentDir;
+        composeFile = currentComposeFile;
+      }
+    } else if (currentComposeExists && !savedComposeExists) {
+      const useCurrentAnswer = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'useCurrent',
+          message: `Found docker-compose.yml in current directory. Use it instead of saved images directory?`,
+          default: true
+        }
+      ]);
+      
+      if (useCurrentAnswer.useCurrent) {
+        targetDirectory = currentDir;
+        composeFile = currentComposeFile;
+      }
+    }
+    
+    // Ask user what docker compose operation they want to perform
+    const composeOperation = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'operation',
+        message: 'What docker compose operation would you like to perform?',
+        choices: [
+          {
+            name: '🚀 Run docker compose up (foreground)',
+            value: 'up'
+          },
+          {
+            name: '⚡ Run docker compose up -d (detached/background)',
+            value: 'up-d'
+          },
+          {
+            name: '🔄 Run docker compose up --build (rebuild and run)',
+            value: 'up-build'
+          },
+          {
+            name: '⚡ Run docker compose up -d --build (detached with rebuild)',
+            value: 'up-d-build'
+          },
+          {
+            name: '🔧 Run sudo docker compose up -d (with sudo)',
+            value: 'sudo-up-d'
+          },
+          {
+            name: '🔧 Run sudo docker compose up --build (sudo with rebuild)',
+            value: 'sudo-up-build'
+          },
+          {
+            name: '🛑 Run docker compose down',
+            value: 'down'
+          },
+          {
+            name: '🔧 Run sudo docker compose down (with sudo)',
+            value: 'sudo-down'
+          },
+          {
+            name: '📊 Show docker compose status',
+            value: 'ps'
+          },
+          {
+            name: '📋 Show docker compose logs',
+            value: 'logs'
+          },
+          {
+            name: '🔧 Run sudo docker compose logs (with sudo)',
+            value: 'sudo-logs'
+          },
+          {
+            name: '📄 View docker-compose.yml contents',
+            value: 'view'
+          },
+          {
+            name: '🚪 Cancel',
+            value: 'cancel'
+          }
+        ]
+      }
+    ]);
+
+    if (composeOperation.operation === 'cancel') {
+      console.log(chalk.yellow('Docker compose operation cancelled.'));
+      return;
+    }
+
+    // Check if docker-compose.yml exists in the saved images directory
+    const composeFileExists = await fs.pathExists(composeFile);
+    
+    if (!composeFileExists) {
+      console.log(chalk.yellow(`⚠️  No docker-compose.yml found in ${targetDirectory}`));
+      console.log(chalk.blue('Available files in saved images directory:'));
+      
+      try {
+        const files = await fs.readdir(targetDirectory);
+        files.forEach(file => {
+          console.log(chalk.gray(`  • ${file}`));
+        });
+      } catch (error) {
+        console.log(chalk.red(`❌ Error reading directory: ${error.message}`));
+      }
+      
+      const createComposeAnswer = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'createCompose',
+          message: 'Would you like to create a basic docker-compose.yml file?',
+          default: false
+        }
+      ]);
+
+      if (createComposeAnswer.createCompose) {
+        await this.createBasicDockerComposeFile(composeFile);
+      } else {
+        console.log(chalk.yellow('Please create a docker-compose.yml file manually and try again.'));
+        return;
+      }
+    }
+
+    // Navigate to saved images directory and run docker compose
+    console.log(chalk.blue(`\n📁 Navigating to: ${targetDirectory}`));
+    
+    try {
+      // Change to the saved images directory
+      process.chdir(targetDirectory);
+      console.log(chalk.green(`✅ Changed directory to: ${targetDirectory}`));
+      
+      // Run the selected docker compose operation
+      let command = '';
+      let description = '';
+      
+      switch (composeOperation.operation) {
+        case 'up':
+          command = 'docker compose up';
+          description = 'Starting services in foreground...';
+          break;
+        case 'up-d':
+          command = 'docker compose up -d';
+          description = 'Starting services in background...';
+          break;
+        case 'up-build':
+          command = 'docker compose up --build';
+          description = 'Rebuilding and starting services in foreground...';
+          break;
+        case 'up-d-build':
+          command = 'docker compose up -d --build';
+          description = 'Rebuilding and starting services in background...';
+          break;
+        case 'sudo-up-d':
+          command = 'sudo docker compose up -d';
+          description = 'Starting services in background with sudo...';
+          break;
+        case 'sudo-up-build':
+          command = 'sudo docker compose up --build';
+          description = 'Rebuilding and starting services in foreground with sudo...';
+          break;
+        case 'down':
+          command = 'docker compose down';
+          description = 'Stopping and removing services...';
+          break;
+        case 'sudo-down':
+          command = 'sudo docker compose down';
+          description = 'Stopping and removing services with sudo...';
+          break;
+        case 'ps':
+          command = 'docker compose ps';
+          description = 'Showing service status...';
+          break;
+        case 'logs':
+          command = 'docker compose logs';
+          description = 'Showing service logs...';
+          break;
+        case 'sudo-logs':
+          command = 'sudo docker compose logs';
+          description = 'Showing service logs with sudo...';
+          break;
+        case 'view':
+          console.log(chalk.blue('\n📄 docker-compose.yml Contents:'));
+          try {
+            const composeContent = await fs.readFile(composeFile, 'utf8');
+            console.log(composeContent);
+          } catch (error) {
+            console.log(chalk.red(`❌ Error reading docker-compose.yml: ${error.message}`));
+          }
+          return; // Exit after viewing
+      }
+      
+      console.log(chalk.blue(`\n${description}`));
+      console.log(chalk.gray(`Command: ${command}`));
+      
+      // Execute the command
+      const spinner = ora(`Running: ${command}`).start();
+      
+      try {
+        const output = execSync(command, { 
+          encoding: 'utf8',
+          stdio: 'pipe'
+        });
+        
+        spinner.succeed(`✅ ${description}`);
+        console.log(chalk.gray('\nOutput:'));
+        console.log(output);
+        
+      } catch (error) {
+        spinner.fail(`❌ ${description} failed`);
+        console.log(chalk.red(`Error: ${error.message}`));
+        
+        if (error.stdout) {
+          console.log(chalk.gray('\nSTDOUT:'));
+          console.log(error.stdout);
+        }
+        
+        if (error.stderr) {
+          console.log(chalk.red('\nSTDERR:'));
+          console.log(error.stderr);
+        }
+      }
+      
+    } catch (error) {
+      console.log(chalk.red(`❌ Error changing directory: ${error.message}`));
+    }
+  }
+
+  async createBasicDockerComposeFile(composeFilePath) {
+    console.log(chalk.blue('\n📝 Creating basic docker-compose.yml file...'));
+    
+    const basicComposeContent = `version: '3.8'
+
+services:
+  app:
+    image: your-app-image:latest
+    container_name: your-app-container
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  app-data:
+    driver: local
+`;
+
+    try {
+      await fs.writeFile(composeFilePath, basicComposeContent);
+      console.log(chalk.green(`✅ Created basic docker-compose.yml at: ${composeFilePath}`));
+      console.log(chalk.yellow('⚠️  Please edit this file to match your specific application requirements.'));
+    } catch (error) {
+      console.log(chalk.red(`❌ Failed to create docker-compose.yml: ${error.message}`));
+    }
+  }
+
+  async autoRunDockerCompose(action) {
+    console.log(chalk.blue('\n🐳 Auto-running docker compose...'));
+    
+    // Check if we're in the saved images directory
+    const currentDir = process.cwd();
+    const savedImagesDir = path.resolve(this.savedImagesDir);
+    
+    console.log(chalk.blue(`Current directory: ${currentDir}`));
+    console.log(chalk.blue(`Saved images directory: ${savedImagesDir}`));
+    
+    // Check for docker-compose.yml in current directory
+    const currentComposeFile = path.join(currentDir, 'docker-compose.yml');
+    const savedComposeFile = path.join(savedImagesDir, 'docker-compose.yml');
+    const currentComposeExists = await fs.pathExists(currentComposeFile);
+    const savedComposeExists = await fs.pathExists(savedComposeFile);
+    
+    let targetDirectory = savedImagesDir;
+    let composeFile = savedComposeFile;
+    
+    // If docker-compose.yml exists in current directory, ask user which to use
+    if (currentComposeExists && savedComposeExists) {
+      const directoryChoice = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'directory',
+          message: 'Found docker-compose.yml in both directories. Which would you like to use?',
+          choices: [
+            {
+              name: `📁 Current directory: ${currentDir}`,
+              value: 'current'
+            },
+            {
+              name: `📁 Saved images directory: ${savedImagesDir}`,
+              value: 'saved'
+            }
+          ]
+        }
+      ]);
+      
+      if (directoryChoice.directory === 'current') {
+        targetDirectory = currentDir;
+        composeFile = currentComposeFile;
+      }
+    } else if (currentComposeExists && !savedComposeExists) {
+      const useCurrentAnswer = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'useCurrent',
+          message: `Found docker-compose.yml in current directory. Use it instead of saved images directory?`,
+          default: true
+        }
+      ]);
+      
+      if (useCurrentAnswer.useCurrent) {
+        targetDirectory = currentDir;
+        composeFile = currentComposeFile;
+      }
+    }
+
+    // Check if docker-compose.yml exists in the saved images directory
+    const composeFileExists = await fs.pathExists(composeFile);
+    
+    if (!composeFileExists) {
+      console.log(chalk.yellow(`⚠️  No docker-compose.yml found in ${targetDirectory}`));
+      console.log(chalk.blue('Available files in saved images directory:'));
+      
+      try {
+        const files = await fs.readdir(targetDirectory);
+        files.forEach(file => {
+          console.log(chalk.gray(`  • ${file}`));
+        });
+      } catch (error) {
+        console.log(chalk.red(`❌ Error reading directory: ${error.message}`));
+      }
+      
+      const createComposeAnswer = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'createCompose',
+          message: 'Would you like to create a basic docker-compose.yml file?',
+          default: false
+        }
+      ]);
+
+      if (createComposeAnswer.createCompose) {
+        await this.createBasicDockerComposeFile(composeFile);
+      } else {
+        console.log(chalk.yellow('Please create a docker-compose.yml file manually and try again.'));
+        return;
+      }
+    }
+
+    // Navigate to saved images directory and run docker compose
+    console.log(chalk.blue(`\n📁 Navigating to: ${targetDirectory}`));
+    
+    try {
+      // Change to the saved images directory
+      process.chdir(targetDirectory);
+      console.log(chalk.green(`✅ Changed directory to: ${targetDirectory}`));
+      
+      // Run the selected docker compose operation
+      let command = '';
+      let description = '';
+      
+      switch (action) {
+        case 'auto-up-d':
+          command = 'docker compose up -d';
+          description = 'Starting services in background...';
+          break;
+        case 'auto-sudo-up-d':
+          command = 'sudo docker compose up -d';
+          description = 'Starting services in background with sudo...';
+          break;
+      }
+      
+      console.log(chalk.blue(`\n${description}`));
+      console.log(chalk.gray(`Command: ${command}`));
+      
+      // Execute the command
+      const spinner = ora(`Running: ${command}`).start();
+      
+      try {
+        const output = execSync(command, { 
+          encoding: 'utf8',
+          stdio: 'pipe'
+        });
+        
+        spinner.succeed(`✅ ${description}`);
+        console.log(chalk.gray('\nOutput:'));
+        console.log(output);
+        
+      } catch (error) {
+        spinner.fail(`❌ ${description} failed`);
+        console.log(chalk.red(`Error: ${error.message}`));
+        
+        if (error.stdout) {
+          console.log(chalk.gray('\nSTDOUT:'));
+          console.log(error.stdout);
+        }
+        
+        if (error.stderr) {
+          console.log(chalk.red('\nSTDERR:'));
+          console.log(error.stderr);
+        }
+      }
+      
+    } catch (error) {
+      console.log(chalk.red(`❌ Error changing directory: ${error.message}`));
+    }
+  }
+
   async run() {
     try {
       await this.init();
@@ -1624,7 +2129,7 @@ class DockerImageManager {
       }
 
       // Setup Appwrite for storage access (not needed for remove mode or nuclear cleanup)
-      if (mode !== 'remove' && mode !== 'nuclear-cleanup' && mode !== 'batch-tag') {
+      if (mode !== 'remove' && mode !== 'nuclear-cleanup' && mode !== 'batch-tag' && mode !== 'docker-compose') {
         await this.setupAppwrite();
       }
 
@@ -1642,6 +2147,8 @@ class DockerImageManager {
         await this.runNuclearCleanupMode();
       } else if (mode === 'batch-tag') {
         await this.runBatchTagMode();
+      } else if (mode === 'docker-compose') {
+        await this.runDockerComposeOperation();
       }
       
     } catch (error) {
