@@ -6,6 +6,7 @@ const path = require('path');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const ora = require('ora');
+const cliProgress = require('cli-progress');
 const { Client, Storage, ID, InputFile } = require('node-appwrite');
 
 class DockerImageManager {
@@ -205,12 +206,40 @@ class DockerImageManager {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-      // Write the file to local disk
+      // Get content length for progress bar
+      const contentLength = response.headers.get('content-length');
+      const totalSize = contentLength ? parseInt(contentLength, 10) : 0;
+      
+      // Create progress bar for download
+      let progressBar = null;
+      if (totalSize > 0) {
+        progressBar = new cliProgress.SingleBar({
+          format: `Downloading ${file.name} |{bar}| {percentage}% | {value}/{total} bytes | ETA: {eta}s | Speed: {speed}`,
+          barCompleteChar: '\u2588',
+          barIncompleteChar: '\u2591',
+          hideCursor: true
+        });
+        progressBar.start(totalSize, 0);
+      }
+      
+      // Write the file to local disk with progress tracking
       const fileStream = fs.createWriteStream(downloadPath);
+      let downloadedBytes = 0;
+      
+      response.body.on('data', (chunk) => {
+        downloadedBytes += chunk.length;
+        if (progressBar) {
+          progressBar.update(downloadedBytes);
+        }
+      });
+      
       response.body.pipe(fileStream);
       
       return new Promise((resolve, reject) => {
         fileStream.on('finish', () => {
+          if (progressBar) {
+            progressBar.stop();
+          }
           spinner.succeed(`Downloaded ${file.name}`);
           resolve({
             ...file,
@@ -219,6 +248,9 @@ class DockerImageManager {
         });
         
         fileStream.on('error', (error) => {
+          if (progressBar) {
+            progressBar.stop();
+          }
           spinner.fail(`Failed to download ${file.name}`);
           reject(error);
         });
@@ -473,14 +505,22 @@ class DockerImageManager {
       
       let uploadedFile = null;
       
+      // Create progress bar
+      const totalChunks = Math.ceil(stats.size / CHUNK_SIZE);
+      const progressBar = new cliProgress.SingleBar({
+        format: `Uploading ${savedImage.savedName} |{bar}| {percentage}% | {value}/{total} chunks | ETA: {eta}s | Speed: {speed}`,
+        barCompleteChar: '\u2588',
+        barIncompleteChar: '\u2591',
+        hideCursor: true
+      });
+      
+      progressBar.start(totalChunks, 0);
+      
       // Upload file in chunks
       for (let start = 0; start < stats.size; start += CHUNK_SIZE) {
         const end = Math.min(start + CHUNK_SIZE, stats.size);
         const chunk = fileBuffer.slice(start, end);
         const chunkNumber = Math.floor(start / CHUNK_SIZE) + 1;
-        const totalChunks = Math.ceil(stats.size / CHUNK_SIZE);
-        
-        console.log(`Uploading chunk ${chunkNumber}/${totalChunks} (${start}-${end-1}/${stats.size})`);
         
         const FormData = require('form-data');
         const fetch = require('node-fetch');
@@ -527,7 +567,7 @@ class DockerImageManager {
         
         if (!response.ok) {
           const errorText = await response.text();
-          console.log(`Error response for chunk ${chunkNumber}: ${errorText}`);
+          progressBar.stop();
           throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
         
@@ -535,16 +575,13 @@ class DockerImageManager {
         
         if (start === 0) {
           uploadedFile = result;
-          console.log(`File created with ID: ${uploadedFile.$id}`);
         }
         
-        console.log(`Chunk ${chunkNumber}/${totalChunks} uploaded successfully`);
-        
-        // Update spinner with progress
-        spinner.text = `Uploading ${savedImage.savedName}... (${chunkNumber}/${totalChunks} chunks)`;
+        // Update progress bar
+        progressBar.update(chunkNumber);
       }
       
-      console.log('Chunked upload completed successfully!');
+      progressBar.stop();
       spinner.succeed(`Uploaded ${savedImage.savedName} to Appwrite (ID: ${uploadedFile.$id})`);
       return uploadedFile;
       
