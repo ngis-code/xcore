@@ -51,6 +51,10 @@ class DockerImageManager {
             value: 'remove'
           },
           {
+            name: '💥 Nuclear cleanup - Remove ALL Docker containers, images, volumes, and networks',
+            value: 'nuclear-cleanup'
+          },
+          {
             name: '🚪 Exit',
             value: 'exit'
           }
@@ -1009,6 +1013,198 @@ class DockerImageManager {
     }
   }
 
+  async runNuclearCleanupMode() {
+    console.log(chalk.red.bold('\n💥 NUCLEAR CLEANUP MODE'));
+    console.log(chalk.red('This will completely clean up your Docker environment and start fresh.\n'));
+    
+    // Show what will be removed
+    console.log(chalk.yellow('This operation will:'));
+    console.log(chalk.gray('  • Stop ALL running containers'));
+    console.log(chalk.gray('  • Remove ALL containers (running and stopped)'));
+    console.log(chalk.gray('  • Remove ALL Docker images'));
+    console.log(chalk.gray('  • Remove ALL Docker volumes'));
+    console.log(chalk.gray('  • Remove ALL custom Docker networks'));
+    console.log(chalk.gray('  • Leave only default networks (bridge, host, none, ingress)'));
+    
+    // Get current Docker state for confirmation
+    let containerCount = 0;
+    let imageCount = 0;
+    let volumeCount = 0;
+    let networkCount = 0;
+    
+    try {
+      // Count containers
+      const containersOutput = execSync('docker ps -aq', { encoding: 'utf8' });
+      containerCount = containersOutput.trim().split('\n').filter(line => line.length > 0).length;
+      
+      // Count images
+      const imagesOutput = execSync('docker images -q', { encoding: 'utf8' });
+      imageCount = imagesOutput.trim().split('\n').filter(line => line.length > 0).length;
+      
+      // Count volumes
+      const volumesOutput = execSync('docker volume ls -q', { encoding: 'utf8' });
+      volumeCount = volumesOutput.trim().split('\n').filter(line => line.length > 0).length;
+      
+      // Count custom networks (excluding default ones)
+      const networksOutput = execSync('docker network ls | grep -vE "bridge|host|none|ingress" | awk "{print $1}"', { encoding: 'utf8' });
+      networkCount = networksOutput.trim().split('\n').filter(line => line.length > 0).length;
+      
+    } catch (error) {
+      // If any command fails, assume 0
+      console.log(chalk.gray('Could not determine current Docker state'));
+    }
+    
+    if (containerCount > 0 || imageCount > 0 || volumeCount > 0 || networkCount > 0) {
+      console.log(chalk.blue(`\nCurrent Docker state:`));
+      console.log(chalk.gray(`  • Containers: ${containerCount}`));
+      console.log(chalk.gray(`  • Images: ${imageCount}`));
+      console.log(chalk.gray(`  • Volumes: ${volumeCount}`));
+      console.log(chalk.gray(`  • Custom networks: ${networkCount}`));
+    } else {
+      console.log(chalk.green('\n✅ Docker environment is already clean!'));
+      return;
+    }
+    
+    // Multiple confirmations for safety
+    const confirm1 = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'confirm1',
+        message: 'Are you ABSOLUTELY sure you want to perform nuclear cleanup?',
+        default: false
+      }
+    ]);
+    
+    if (!confirm1.confirm1) {
+      console.log(chalk.yellow('Nuclear cleanup cancelled.'));
+      return;
+    }
+    
+    const confirm2 = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'confirm2',
+        message: 'Type "NUCLEAR" to confirm (case sensitive):',
+        validate: input => input === 'NUCLEAR' || 'Please type "NUCLEAR" exactly to confirm'
+      }
+    ]);
+    
+    if (confirm2.confirm2 !== 'NUCLEAR') {
+      console.log(chalk.yellow('Nuclear cleanup cancelled.'));
+      return;
+    }
+    
+    console.log(chalk.red.bold('\n💥 Starting nuclear cleanup...\n'));
+    
+    const results = {
+      containers: { stopped: 0, removed: 0 },
+      images: { removed: 0 },
+      volumes: { removed: 0 },
+      networks: { removed: 0 },
+      errors: []
+    };
+    
+    // Step 1: Stop all containers
+    console.log(chalk.blue('1️⃣ Stopping all containers...'));
+    try {
+      const stopOutput = execSync('docker stop $(docker ps -q) 2>/dev/null || true', { encoding: 'utf8' });
+      const stoppedContainers = stopOutput.trim().split('\n').filter(line => line.length > 0);
+      results.containers.stopped = stoppedContainers.length;
+      console.log(chalk.green(`   ✅ Stopped ${results.containers.stopped} containers`));
+    } catch (error) {
+      console.log(chalk.yellow(`   ⚠️  No running containers to stop`));
+    }
+    
+    // Step 2: Remove all containers
+    console.log(chalk.blue('2️⃣ Removing all containers...'));
+    try {
+      const removeOutput = execSync('docker rm -f $(docker ps -aq) 2>/dev/null || true', { encoding: 'utf8' });
+      const removedContainers = removeOutput.trim().split('\n').filter(line => line.length > 0);
+      results.containers.removed = removedContainers.length;
+      console.log(chalk.green(`   ✅ Removed ${results.containers.removed} containers`));
+    } catch (error) {
+      console.log(chalk.yellow(`   ⚠️  No containers to remove`));
+    }
+    
+    // Step 3: Remove all images
+    console.log(chalk.blue('3️⃣ Removing all Docker images...'));
+    try {
+      const removeImagesOutput = execSync('docker rmi -f $(docker images -q) 2>/dev/null || true', { encoding: 'utf8' });
+      const removedImages = removeImagesOutput.trim().split('\n').filter(line => line.length > 0);
+      results.images.removed = removedImages.length;
+      console.log(chalk.green(`   ✅ Removed ${results.images.removed} images`));
+    } catch (error) {
+      console.log(chalk.yellow(`   ⚠️  No images to remove`));
+    }
+    
+    // Step 4: Remove all volumes
+    console.log(chalk.blue('4️⃣ Removing all Docker volumes...'));
+    try {
+      const removeVolumesOutput = execSync('docker volume rm $(docker volume ls -q) 2>/dev/null || true', { encoding: 'utf8' });
+      const removedVolumes = removeVolumesOutput.trim().split('\n').filter(line => line.length > 0);
+      results.volumes.removed = removedVolumes.length;
+      console.log(chalk.green(`   ✅ Removed ${results.volumes.removed} volumes`));
+    } catch (error) {
+      console.log(chalk.yellow(`   ⚠️  No volumes to remove`));
+    }
+    
+    // Step 5: Remove custom networks
+    console.log(chalk.blue('5️⃣ Removing custom Docker networks...'));
+    try {
+      const removeNetworksOutput = execSync('docker network rm $(docker network ls | grep -vE "bridge|host|none|ingress" | awk "{print $1}") 2>/dev/null || true', { encoding: 'utf8' });
+      const removedNetworks = removeNetworksOutput.trim().split('\n').filter(line => line.length > 0);
+      results.networks.removed = removedNetworks.length;
+      console.log(chalk.green(`   ✅ Removed ${results.networks.removed} custom networks`));
+    } catch (error) {
+      console.log(chalk.yellow(`   ⚠️  No custom networks to remove`));
+    }
+    
+    // Final verification
+    console.log(chalk.blue('\n6️⃣ Verifying cleanup...'));
+    let finalContainerCount = 0;
+    let finalImageCount = 0;
+    let finalVolumeCount = 0;
+    let finalNetworkCount = 0;
+    
+    try {
+      const finalContainersOutput = execSync('docker ps -aq', { encoding: 'utf8' });
+      finalContainerCount = finalContainersOutput.trim().split('\n').filter(line => line.length > 0).length;
+      
+      const finalImagesOutput = execSync('docker images -q', { encoding: 'utf8' });
+      finalImageCount = finalImagesOutput.trim().split('\n').filter(line => line.length > 0).length;
+      
+      const finalVolumesOutput = execSync('docker volume ls -q', { encoding: 'utf8' });
+      finalVolumeCount = finalVolumesOutput.trim().split('\n').filter(line => line.length > 0).length;
+      
+      const finalNetworksOutput = execSync('docker network ls | grep -vE "bridge|host|none|ingress" | awk "{print $1}"', { encoding: 'utf8' });
+      finalNetworkCount = finalNetworksOutput.trim().split('\n').filter(line => line.length > 0).length;
+      
+    } catch (error) {
+      console.log(chalk.gray('Could not verify final state'));
+    }
+    
+    // Summary
+    console.log(chalk.green.bold('\n🎉 Nuclear cleanup completed!'));
+    console.log(chalk.green(`- Containers stopped: ${results.containers.stopped}`));
+    console.log(chalk.green(`- Containers removed: ${results.containers.removed}`));
+    console.log(chalk.green(`- Images removed: ${results.images.removed}`));
+    console.log(chalk.green(`- Volumes removed: ${results.volumes.removed}`));
+    console.log(chalk.green(`- Custom networks removed: ${results.networks.removed}`));
+    
+    console.log(chalk.blue('\nFinal Docker state:'));
+    console.log(chalk.gray(`  • Containers: ${finalContainerCount}`));
+    console.log(chalk.gray(`  • Images: ${finalImageCount}`));
+    console.log(chalk.gray(`  • Volumes: ${finalVolumeCount}`));
+    console.log(chalk.gray(`  • Custom networks: ${finalNetworkCount}`));
+    
+    if (finalContainerCount === 0 && finalImageCount === 0 && finalVolumeCount === 0 && finalNetworkCount === 0) {
+      console.log(chalk.green.bold('\n✅ Docker environment is now completely clean!'));
+      console.log(chalk.blue('You can now start fresh with your deployments.'));
+    } else {
+      console.log(chalk.yellow('\n⚠️  Some items may still exist (possibly in use or protected)'));
+    }
+  }
+
   async run() {
     try {
       await this.init();
@@ -1021,8 +1217,8 @@ class DockerImageManager {
         return;
       }
 
-      // Setup Appwrite for storage access (not needed for remove mode)
-      if (mode !== 'remove') {
+      // Setup Appwrite for storage access (not needed for remove mode or nuclear cleanup)
+      if (mode !== 'remove' && mode !== 'nuclear-cleanup') {
         await this.setupAppwrite();
       }
 
@@ -1036,6 +1232,8 @@ class DockerImageManager {
         await this.runBulkDownloadMode();
       } else if (mode === 'remove') {
         await this.runRemoveMode();
+      } else if (mode === 'nuclear-cleanup') {
+        await this.runNuclearCleanupMode();
       }
       
     } catch (error) {
