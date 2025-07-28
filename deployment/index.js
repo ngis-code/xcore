@@ -485,7 +485,7 @@ class DockerImageManager {
   }
 
   async uploadToAppwrite(savedImage) {
-    const spinner = ora(`Uploading ${savedImage.savedName} to Appwrite...`).start();
+    const spinner = ora(`Preparing upload for ${savedImage.savedName}...`).start();
     
     try {
       // Debug: Check file exists and has content
@@ -505,15 +505,17 @@ class DockerImageManager {
       
       let uploadedFile = null;
       
-      // Create progress bar
+      // Create progress bar for the entire upload process
       const totalChunks = Math.ceil(stats.size / CHUNK_SIZE);
       const progressBar = new cliProgress.SingleBar({
-        format: `Uploading ${savedImage.savedName} |{bar}| {percentage}% | {value}/{total} chunks | ETA: {eta}s | Speed: {speed}`,
+        format: `Uploading ${savedImage.savedName} |{bar}| {percentage}% | Chunk {value}/{total} | ETA: {eta}s`,
         barCompleteChar: '\u2588',
         barIncompleteChar: '\u2591',
-        hideCursor: true
+        hideCursor: true,
+        clearOnComplete: false
       });
       
+      // Start the progress bar
       progressBar.start(totalChunks, 0);
       
       // Upload file in chunks
@@ -577,10 +579,11 @@ class DockerImageManager {
           uploadedFile = result;
         }
         
-        // Update progress bar
+        // Update progress bar for this chunk completion
         progressBar.update(chunkNumber);
       }
       
+      // Complete the progress bar
       progressBar.stop();
       spinner.succeed(`Uploaded ${savedImage.savedName} to Appwrite (ID: ${uploadedFile.$id})`);
       return uploadedFile;
